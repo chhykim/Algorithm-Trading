@@ -1,0 +1,31 @@
+import win32com.client
+
+instStockChart = win32com.client.Dispatch("CpSysDib.StockChart")
+
+
+instStockChart.SetInputValue(0,"A000660")
+instStockChart.SetInputValue(1,ord('2'))
+# 이번 코딩의 X팩터 SetInputValue(4,x) x는 평균거래량의 현재로 부터 측정기간
+instStockChart.SetInputValue(4,60)
+instStockChart.SetInputValue(5,8)
+instStockChart.SetInputValue(6,ord('D'))
+instStockChart.SetInputValue(9,ord('1'))
+
+instStockChart.BlockRequest()
+
+volumes = []
+numData = instStockChart.GetHeaderValue(3)
+for i in range(numData) :
+    volume = instStockChart.GetDataValue(0,i)
+    volumes.append(volume)
+
+#평균 거래량을 계산
+averageVolume = (sum(volumes) - volumes[0]) / (len(volumes) -1)
+
+#거래량이 평균거래량의 열배를 넘어가면
+if(volumes[0] > averageVolume * 10):
+    print("대박주")
+
+#거래량이 평균거래량의 열배를 안넘어가면
+else :
+    print("일반주" , volumes[0]/averageVolume)
